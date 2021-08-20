@@ -4,8 +4,10 @@ const app = express();
 const ejs = require('ejs')
 const mongoose = require('mongoose') // connect mongodb
 const BlogPost = require('./models/BlogPost.js')
-const bodyParser =
-    require('body-parser')
+const bodyParser = require('body-parser')
+const fileUpload = require('express-fileupload')
+
+app.use(fileUpload())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -46,11 +48,18 @@ app.get('/posts/new', (req, res) => {
     res.render('create')
 })
 
-app.post('/posts/store', async(req, res) => {
-    // console.log(req.body)
-    // console.log(req.body.title)
-    // console.log(req.body.body)
-    await BlogPost.create(req.body, (error, blogpost) => {
+// app.post('/posts/store', async(req, res) => {
+//     // console.log(req.body)
+//     // console.log(req.body.title)
+//     // console.log(req.body.body)
+//     await BlogPost.create(req.body, (error, blogpost) => {
+//         res.redirect('/')
+//     })
+// })
+app.post('/posts/store', (req, res) => {
+    let image = req.files.image;
+    image.mv(path.resolve(__dirname, 'public/img', image.name), async(error) => {
+        await BlogPost.create({...req.body, image: '/img/' + image.name })
         res.redirect('/')
     })
 })
