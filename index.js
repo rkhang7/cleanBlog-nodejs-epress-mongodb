@@ -2,6 +2,10 @@ const express = require('express')
 const path = require('path')
 const app = express();
 const ejs = require('ejs')
+const mongoose = require('mongoose') // connect mongodb
+
+mongoose.connect('mongodb://localhost/blog', { useNewUrlParser: true })
+
 app.set('view engine', 'ejs')
 
 app.use(express.static('public'))
