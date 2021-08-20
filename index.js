@@ -6,8 +6,18 @@ const mongoose = require('mongoose') // connect mongodb
 const BlogPost = require('./models/BlogPost.js')
 const bodyParser = require('body-parser')
 const fileUpload = require('express-fileupload')
+    // create MiddleWare
+const validateMiddleWare =
+    (
+        req, res, next) => {
+        if (req.files == null || req.body.title == null || req.body.title == null) {
+            return res.redirect('/posts/new')
+        }
+        next()
+    }
 
 app.use(fileUpload())
+app.use('/posts/store', validateMiddleWare) // 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -28,7 +38,7 @@ app.get('/', async(req, res) => {
     res.render('index', {
         blogposts: blogposts
     }); // using ejs
-    console.log(blogposts)
+    // console.log(blogposts)
 })
 
 app.get('/about', (req, res) => {
