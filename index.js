@@ -7,17 +7,15 @@ const BlogPost = require('./models/BlogPost.js')
 const bodyParser = require('body-parser')
 const fileUpload = require('express-fileupload')
     // create MiddleWare
-const validateMiddleWare =
-    (
-        req, res, next) => {
-        if (req.files == null || req.body.title == null || req.body.title == null) {
-            return res.redirect('/posts/new')
-        }
-        next()
-    }
+const validateMiddleware = require("./middleware/validationMiddleware");
+// controller
+const newPostController = require('./controllers/newPost')
+const homeController = require('./controllers/home')
+const storePostController = require('./controllers/storePost')
+const getPostController = require('./controllers/getPost')
 
 app.use(fileUpload())
-app.use('/posts/store', validateMiddleWare) // 
+app.use('/posts/store', validateMiddleware) // 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -32,14 +30,7 @@ app.listen(4000, () => {
     console.log('App listening on port 4000');
 })
 
-app.get('/', async(req, res) => {
-    // res.sendFile(path.resolve(__dirname, 'pages/index.html'))
-    const blogposts = await BlogPost.find({})
-    res.render('index', {
-        blogposts: blogposts
-    }); // using ejs
-    // console.log(blogposts)
-})
+app.get('/', homeController)
 
 app.get('/about', (req, res) => {
     res.render('about'); // using ejs
@@ -47,16 +38,9 @@ app.get('/about', (req, res) => {
 app.get('/contact', (req, res) => {
     res.render('contact'); // using ejs
 })
-app.get('/post/:id', async(req, res) => {
-    const blogpost = await BlogPost.findById(req.params.id)
-    res.render('post', {
-        blogpost
-    })
-})
+app.get('/post/:id', getPostController)
 
-app.get('/posts/new', (req, res) => {
-    res.render('create')
-})
+app.get('/posts/new', newPostController)
 
 // app.post('/posts/store', async(req, res) => {
 //     // console.log(req.body)
@@ -66,10 +50,4 @@ app.get('/posts/new', (req, res) => {
 //         res.redirect('/')
 //     })
 // })
-app.post('/posts/store', (req, res) => {
-    let image = req.files.image;
-    image.mv(path.resolve(__dirname, 'public/img', image.name), async(error) => {
-        await BlogPost.create({...req.body, image: '/img/' + image.name })
-        res.redirect('/')
-    })
-})
+app.post('/posts/store', storePostController)
