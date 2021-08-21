@@ -15,6 +15,8 @@ const storePostController = require('./controllers/storePost')
 const getPostController = require('./controllers/getPost')
 const newUserController = require('./controllers/newUser')
 const storeUserController = require('./controllers/storeUser')
+const loginController = require('./controllers/login')
+const loginUserController = require('./controllers/loginUser')
 
 app.use(fileUpload())
 app.use('/posts/store', validateMiddleware) // 
@@ -44,14 +46,6 @@ app.get('/post/:id', getPostController)
 
 app.get('/posts/new', newPostController)
 
-// app.post('/posts/store', async(req, res) => {
-//     // console.log(req.body)
-//     // console.log(req.body.title)
-//     // console.log(req.body.body)
-//     await BlogPost.create(req.body, (error, blogpost) => {
-//         res.redirect('/')
-//     })
-// })
 app.post('/posts/store', storePostController)
 
 
@@ -60,3 +54,9 @@ app.get('/auth/register', newUserController)
 
 // store user
 app.post('/users/register', storeUserController)
+
+// login gui
+app.get('/auth/login', loginController);
+
+// login user
+app.post('/users/login', loginUserController)
